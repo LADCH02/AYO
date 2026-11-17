@@ -1,50 +1,49 @@
 import matplotlib.pyplot as plt
 
-def greedy_knapsack(items, capacity, sort_key, reverse_order):
-    # Ordenar los objetos según el criterio elegido
-    sorted_items = sorted(items, key=lambda x: x[sort_key], reverse=reverse_order)
+class Item:
+    def __init__(self, id, weight, value):
+        self.id = id
+        self.weight = weight
+        self.value = value
+
+def run_exercise_2():
+    print("\n--- EJERCICIO 2: GREEDY KNAPSACK (MENOR PESO PRIMERO) ---")
+    W = 10
+    items = [Item(1, 2, 3), Item(2, 9, 45), Item(3, 8, 32)]
     
-    total_value = 0
-    total_weight = 0
-    selected_items = []
     
-    for item in sorted_items:
-        if total_weight + item['weight'] <= capacity:
-            selected_items.append(item['name'])
-            total_weight += item['weight']
-            total_value += item['value']
+    sorted_classic = sorted(items, key=lambda x: x.value / x.weight, reverse=True)
+    w_c, v_c = 0, 0
+    for it in sorted_classic:
+        if w_c + it.weight <= W:
+            w_c += it.weight
+            v_c += it.value
             
-    return selected_items, total_weight, total_value
+   
+    sorted_min_w = sorted(items, key=lambda x: x.weight)
+    w_m, v_m = 0, 0
+    for it in sorted_min_w:
+        if w_m + it.weight <= W:
+            w_m += it.weight
+            v_m += it.value
+
+    print(f"Valor Total Método Clásico (Ratio V/P): {v_c}")
+    print(f"Valor Total Método Modificado (Menor Peso): {v_m}")
+
+    # Visualización Gráfica de Barras Comparativa
+    methods = ['Clásico (Ratio V/P)', 'Modificado (Menor Peso)']
+    values = [v_c, v_m]
+    
+    plt.figure(figsize=(7, 4))
+    bars = plt.bar(methods, values, color=['#2ca02c', '#d62728'])
+    plt.title('Ejercicio 2: Comparativa de Valor Total Obtenido (Knapsack)')
+    plt.ylabel('Valor Total')
+    for bar in bars:
+        yval = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width()/2.0, yval + 1, f'{yval}', ha='center', va='bottom')
+    plt.ylim(0, max(values) + 10)
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.show()
 
 if __name__ == '__main__':
-    # Instancia pequeña diseñada para que "menor peso" falle
-    items = [
-        {'name': 'A', 'weight': 1, 'value': 1, 'ratio': 1},
-        {'name': 'B', 'weight': 2, 'value': 2, 'ratio': 1},
-        {'name': 'C', 'weight': 5, 'value': 20, 'ratio': 4}
-    ]
-    capacity = 5
-
-    # Método 1: Menor peso primero (menor a mayor)
-    sel_w, w_w, v_w = greedy_knapsack(items, capacity, 'weight', False)
-    
-    # Método 2: Ratio Valor/Peso (mayor a menor)
-    sel_r, w_r, v_r = greedy_knapsack(items, capacity, 'ratio', True)
-
-    # Visualización
-    labels = ['Menor Peso Primero', 'Valor / Peso']
-    valores = [v_w, v_r]
-    pesos = [w_w, w_r]
-
-    fig, ax1 = plt.subplots(figsize=(8, 5))
-    
-    ax1.bar(labels, valores, color=['salmon', 'lightblue'])
-    ax1.set_ylabel('Valor Total Obtenido', color='black')
-    ax1.set_title(f'Greedy Knapsack (Capacidad = {capacity})\nSelección Peso: {sel_w} | Selección Ratio: {sel_r}')
-    
-    # Añadir texto con la capacidad usada
-    for i, v in enumerate(valores):
-        ax1.text(i, v + 0.5, f'Valor: {v}\nPeso Usado: {pesos[i]}/{capacity}', ha='center')
-
-    plt.ylim(0, 25)
-    plt.show()
+    run_exercise_2()
